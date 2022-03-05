@@ -22,11 +22,12 @@ def close_db(error):
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
 
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     db = get_db()
     if request.method == 'POST':
-        date = request.form['date'] # assuming the date is in YYYY-MM-DD format
+        date = request.form['date']  # assuming the date is in YYYY-MM-DD format
 
         dt = datetime.strptime(date, '%Y-%m-%d')
         database_date = datetime.strftime(dt, '%Y%m%d')
@@ -49,9 +50,23 @@ def index():
     return render_template('home.html', results=pretty_results)
 
 
-@app.route('/view')
-def view():
-    return render_template('day.html')
+@app.route('/view/<date>', methods=['GET', 'POST'])  # date is going to be something like 20170520
+def view(date):
+    db = get_db()
+
+    if request.method == 'POST':
+        return f"<h1>The food item added is {request.form['food-select']}"
+
+    cur = db.execute('select entry_date from log_date where entry_date = ?', [date])
+    result = cur.fetchone()
+
+    d = datetime.strptime(str(result['entry_date']), '%Y%m%d')
+    pretty_date = datetime.strftime(d, '%B %d, %Y')
+
+    food_cur = db.execute('select id, name from food')
+    food_results = food_cur.fetchall()
+
+    return render_template('day.html', date=pretty_date, food_results=food_results)
 
 
 @app.route('/food', methods=['GET', 'POST'])
