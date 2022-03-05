@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 
 def connect_db():
-    sql = sqlite3.connect('data.db')  # database root
+    sql = sqlite3.connect('food_log.db')  # database root
     sql.row_factory = sqlite3.Row
     return sql
 
@@ -33,15 +33,20 @@ def view():
 
 @app.route('/food', methods=['GET', 'POST'])
 def food():
-    if request.method == 'GET':
-        return render_template('add_food.html')
+    if request.method == 'POST':
+        food_name = request.form['food-name']
+        protein = int(request.form['protein'])
+        carbohydrates = int(request.form['carbohydrates'])
+        fat = int(request.form['fat'])
 
-    food_name = request.form['food-name']
-    protein = request.form['protein']
-    carbohydrates = request.form['carbohydrates']
-    fat = request.form['fat']
+        calories = protein * 4 + carbohydrates * 4 + fat * 9
 
-    return f"<h1>{food_name} {protein} {carbohydrates} {fat}</h1>"
+        db = get_db()
+        db.execute('insert into food (name, protein, carbohydrates, fat, calories) values (?, ?, ?, ?, ?)',
+                   [food_name, protein, carbohydrates, fat, calories])
+        db.commit()
+
+    return render_template('add_food.html')
 
 
 if __name__ == '__main__':
