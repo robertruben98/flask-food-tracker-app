@@ -1,22 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends "base.html" %}
 
-    <title>Food Tracker | Home</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="{{ url_for('static',filename='bootstrap.min.css') }}" rel="stylesheet">
-    <!-- Custom styles for this template -->
-    <link href="{{ url_for('static',filename='theme.css') }}" rel="stylesheet">
-
-  </head>
-
-  <body>
-
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+{% block body %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
           <a class="navbar-brand" href="{{ url_for('index') }}">Food Tracker</a>
@@ -66,7 +51,4 @@
       </div>
 
     </div>
-
-  </body>
-
-</html>
+{% endblock %}

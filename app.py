@@ -1,20 +1,8 @@
 from flask import Flask, render_template, g, request
-import sqlite3
+from database import get_db
 from datetime import datetime
 
 app = Flask(__name__)
-
-
-def connect_db():
-    sql = sqlite3.connect('food_log.db')  # database root
-    sql.row_factory = sqlite3.Row
-    return sql
-
-
-def get_db():
-    if not hasattr(g, 'sqlite3'):
-        g.sqlite_db = connect_db()
-    return g.sqlite_db
 
 
 @app.teardown_appcontext
@@ -37,7 +25,8 @@ def index():
 
     cur = db.execute('select log_date.entry_date, sum(food.protein) as protein, '
                      'sum(food.carbohydrates) as carbohydrates, sum(food.fat) as fat, sum(food.calories) as calories '
-                     'from log_date join food_date on food_date.log_date_id = log_date.id '
+                     'from log_date '
+                     'join food_date on food_date.log_date_id = log_date.id '
                      'join food on food.id = food_date.food_id '
                      'group by log_date.id order by log_date.entry_date desc')
     results = cur.fetchall()
