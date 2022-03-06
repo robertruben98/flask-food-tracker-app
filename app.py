@@ -54,13 +54,15 @@ def index():
 def view(date):
     db = get_db()
 
+    cur = db.execute('select id, entry_date from log_date where entry_date = ?', [date])
+    date_result = cur.fetchone()
+
     if request.method == 'POST':
-        return f"<h1>The food item added is {request.form['food-select']}"
+        db.execute('insert into food_date (food_id, log_date_id) values(?,?)',
+                   [request.form['food-select'], date_result['id']])
+        db.commit()
 
-    cur = db.execute('select entry_date from log_date where entry_date = ?', [date])
-    result = cur.fetchone()
-
-    d = datetime.strptime(str(result['entry_date']), '%Y%m%d')
+    d = datetime.strptime(str(date_result['entry_date']), '%Y%m%d')
     pretty_date = datetime.strftime(d, '%B %d, %Y')
 
     food_cur = db.execute('select id, name from food')
